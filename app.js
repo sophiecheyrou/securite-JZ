@@ -32,31 +32,38 @@ async function init() {
   }).map(room => Object.freeze({ ...room }));
   Object.freeze(rooms);
 
+  bindUiEvents();
+  if (el('loginIdentifier')) el('loginIdentifier').value = String(cfg.sharedLoginId || 'SECURITE-JZ');
+
   const supabaseKey = cfg.supabasePublishableKey || cfg.supabaseAnonKey || '';
   const remoteConfigured = /^https:\/\/.+\.supabase\.co\/?$/.test(cfg.supabaseUrl || '') && supabaseKey && !String(supabaseKey).includes('COLLEZ_ICI');
 
-  if (remoteConfigured) {
-    setSyncState('Connexion…', 'connecting');
-    supa = window.supabase.createClient(cfg.supabaseUrl, supabaseKey, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
-    });
-    await ensureActiveExercise();
-    await loadRemote();
-    subscribeRealtime();
-    setSyncState('En direct', 'online');
-    window.addEventListener('online', async () => { setSyncState('Connexion…', 'connecting'); await loadRemote(); setSyncState('En direct', 'online'); renderCurrentView(); });
-    window.addEventListener('offline', () => setSyncState('Hors ligne', 'offline'));
-  } else {
-    statuses = JSON.parse(localStorage.getItem('jz-statuses') || '{}');
-    normalizeStatuses();
-    setSyncState('Mode local', 'local');
-    window.addEventListener('storage', () => {
-      statuses = JSON.parse(localStorage.getItem('jz-statuses') || '{}');
-      normalizeStatuses();
-      renderCurrentView();
-    });
+  // V11 est volontairement « fail closed » : pas de mode local non sécurisé.
+  if (!remoteConfigured) {
+    showAuthGate('Configuration Supabase absente. Conservez le config.js fonctionnel de la V10.');
+    setSyncState('Non connecté', 'offline');
+    return;
   }
 
+  supa = window.supabase.createClient(cfg.supabaseUrl, supabaseKey, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+
+  supa.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || !session) lockApplication();
+  });
+
+  const { data: { session }, error } = await supa.auth.getSession();
+  if (error) throw error;
+  if (!session) {
+    showAuthGate();
+    return;
+  }
+
+  await activateRemoteSession();
+}
+
+function bindUiEvents() {
   document.querySelectorAll('.role-card').forEach(button => button.addEventListener('click', () => openRole(button.dataset.role)));
   el('backBtn').addEventListener('click', showHome);
   el('homeBtn').addEventListener('click', showHome);
@@ -73,9 +80,105 @@ async function init() {
   el('clearSearchBtn').addEventListener('click', clearSearch);
   el('saveExerciseBtn').addEventListener('click', saveExercise);
   el('emailReportBtn').addEventListener('click', () => emailReport(buildExerciseSnapshot()));
+  el('loginForm').addEventListener('submit', login);
+  el('logoutBtn').addEventListener('click', logout);
+}
 
+async function activateRemoteSession() {
+  setSyncState('Connexion…', 'connecting');
+  await ensureActiveExercise();
+  await loadRemote();
+  subscribeRealtime();
+  hideAuthGate();
+  setSyncState('En direct', 'online');
+  el('securityState').hidden = false;
+  el('logoutBtn').hidden = false;
   updateHomeSummary();
+  renderCurrentView();
+
+  if (!window.__jzNetworkEventsBound) {
+    window.__jzNetworkEventsBound = true;
+    window.addEventListener('online', async () => {
+      try { setSyncState('Connexion…', 'connecting'); await loadRemote(); setSyncState('En direct', 'online'); renderCurrentView(); }
+      catch { setSyncState('Synchronisation interrompue', 'offline'); }
+    });
+    window.addEventListener('offline', () => setSyncState('Hors ligne', 'offline'));
+  }
+
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('service-worker.js').catch(() => {});
+}
+
+async function login(event) {
+  event.preventDefault();
+  if (!supa) return;
+  const identifier = el('loginIdentifier').value.trim().toUpperCase();
+  const expectedIdentifier = String(cfg.sharedLoginId || 'SECURITE-JZ').trim().toUpperCase();
+  const email = String(cfg.sharedAuthEmail || '').trim();
+  const password = el('loginPassword').value;
+
+  if (!email || email.includes('COLLEZ_ICI')) {
+    errorNode.textContent = 'Compte unique non configuré. Renseignez sharedAuthEmail dans config.js.';
+    errorNode.hidden = false;
+    return;
+  }
+
+  if (identifier !== expectedIdentifier) {
+    errorNode.textContent = 'Identifiant incorrect.';
+    errorNode.hidden = false;
+    return;
+  }
+  const button = el('loginBtn');
+  const errorNode = el('loginError');
+  errorNode.hidden = true;
+  button.disabled = true;
+  button.textContent = 'Connexion…';
+  try {
+    const { error } = await supa.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    el('loginPassword').value = '';
+    await activateRemoteSession();
+  } catch (error) {
+    errorNode.textContent = 'Connexion impossible. Vérifiez le mot de passe.';
+    errorNode.hidden = false;
+    console.warn('Échec de connexion', error);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Se connecter';
+  }
+}
+
+async function logout() {
+  if (!supa) return;
+  if (!window.confirm('Déconnecter cet appareil ?')) return;
+  await supa.removeAllChannels();
+  const { error } = await supa.auth.signOut();
+  if (error) { alert('Déconnexion impossible : ' + error.message); return; }
+  lockApplication();
+}
+
+function lockApplication() {
+  statuses = {};
+  activeExerciseId = null;
+  activeExerciseStartedAt = null;
+  role = null;
+  el('securityState').hidden = true;
+  el('logoutBtn').hidden = true;
+  setSyncState('Non connecté', 'offline');
+  showAuthGate();
+}
+
+function showAuthGate(message = '') {
+  document.body.classList.add('auth-locked');
+  el('authGate').hidden = false;
+  const errorNode = el('loginError');
+  if (message) { errorNode.textContent = message; errorNode.hidden = false; }
+  else errorNode.hidden = true;
+  setTimeout(() => el('loginPassword')?.focus(), 0);
+}
+
+function hideAuthGate() {
+  el('authGate').hidden = true;
+  document.body.classList.remove('auth-locked');
 }
 
 function normalizeStatuses() {
@@ -507,7 +610,7 @@ function scheduleRemoteReload() {
 
 function subscribeRealtime() {
   supa
-    .channel('jz-room-states-v10')
+    .channel('jz-room-states-v11')
     .on('postgres_changes', {event:'*',schema:'public',table:'room_states'}, payload => {
       const row = payload.new || payload.old;
       if (!row || Number(row.exercise_id) !== Number(activeExerciseId)) return;
@@ -521,7 +624,7 @@ function subscribeRealtime() {
     });
 
   supa
-    .channel('jz-exercises-v10')
+    .channel('jz-exercises-v11')
     .on('postgres_changes', {event:'*',schema:'public',table:'exercises'}, () => scheduleRemoteReload())
     .subscribe();
 }

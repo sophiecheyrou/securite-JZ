@@ -1,23 +1,15 @@
-# Alerte JZ — V10 multi-utilisateurs
+# Alerte JZ — V11.1 compte unique
 
-Cette version reprend l'interface stable de la V9 et ajoute une synchronisation Supabase en temps réel.
+Version sécurisée multi-utilisateurs avec **un seul compte Supabase Auth partagé** par tous les appareils autorisés.
 
-## Fichiers à utiliser
-- `index.html` : application.
-- `styles.css` : présentation.
-- `app.js` : logique V10.
-- `rooms-data.js` / `rooms.json` : liste locale de référence.
-- `config.js` : les 2 valeurs Supabase à renseigner.
-- `supabase.sql` : script complet à exécuter une fois dans Supabase.
-- `GUIDE-SUPABASE-PAS-A-PAS.md` : procédure détaillée pour un débutant.
+- Interface et logique opérationnelle de la V10 conservées.
+- Synchronisation Supabase Realtime conservée.
+- Tableau de bord en lecture seule conservé.
+- Identifiant commun affiché : `SECURITE-JZ` par défaut.
+- L'adresse e-mail technique Supabase est masquée aux agents.
+- Lors de la première connexion, l'agent saisit seulement le mot de passe commun.
+- La session reste mémorisée sur l'appareil.
 
-## V10 : comportement partagé
-- Cour Montmorency : chambres paires, clic = Présent.
-- Cour d'honneur : chambres impaires, clic = Présent.
-- Loge : clic = Sorti.
-- Tableau de bord : lecture seule.
-- Tous les appareils reçoivent les changements en temps réel.
-- « Nouvel exercice » crée une nouvelle session commune à tous les appareils.
-- L'historique des clics est conservé dans Supabase.
+Commencez par lire `GUIDE-V11-1-COMPTE-UNIQUE.md`.
 
-Ne jamais mettre de clé Supabase `secret` ou `service_role` dans `config.js`. Utiliser uniquement la **Publishable key**.
+Le script `SECURISATION-V11.sql` est identique à celui de la V11. Si vous l'avez déjà exécuté, ne le relancez pas inutilement.

@@ -6,9 +6,27 @@
   <meta name="theme-color" content="#101827" />
   <title>Suivi sécurité – Internat Jean Zay</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11-1" />
 </head>
-<body>
+<body class="auth-locked">
+  <section id="authGate" class="auth-gate" aria-labelledby="authTitle">
+    <div class="auth-card">
+      <div class="auth-mark">JZ</div>
+      <p class="eyebrow">ACCÈS SÉCURISÉ</p>
+      <h1 id="authTitle">Internat Jean Zay</h1>
+      <p class="auth-subtitle">Suivi de l’exercice de sécurité</p>
+      <form id="loginForm" class="auth-form">
+        <label for="loginIdentifier">Identifiant</label>
+        <input id="loginIdentifier" type="text" autocomplete="username" required readonly value="SECURITE-JZ" aria-describedby="loginIdentityHelp">
+        <small id="loginIdentityHelp" class="auth-identity-help">Identifiant commun à tous les personnels autorisés.</small>
+        <label for="loginPassword">Mot de passe</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Mot de passe">
+        <button id="loginBtn" class="auth-submit" type="submit">Se connecter</button>
+        <p id="loginError" class="auth-error" role="alert" hidden></p>
+      </form>
+      <p class="auth-help">Accès réservé aux personnels autorisés. La connexion reste mémorisée sur cet appareil.</p>
+    </div>
+  </section>
   <header class="topbar">
     <button id="homeBtn" class="brand" aria-label="Retour à l’accueil">
       <strong>Internat Jean Zay</strong>
@@ -16,6 +34,8 @@
     </button>
     <div class="top-actions">
       <span id="syncState" class="sync-state"></span>
+      <span id="securityState" class="security-state" hidden>🔒 Connecté</span>
+      <button id="logoutBtn" class="logout-button" hidden>Déconnexion</button>
       <button id="archiveBtn" class="archive-button">Archives</button>
       <button id="newExerciseBtn" class="reset-button">Nouvel exercice</button>
       <button id="installBtn" class="install-button" hidden>Installer</button>
@@ -110,8 +130,8 @@
   <div id="toast" class="toast" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="rooms-data.js?v=10"></script>
-  <script src="config.js?v=10"></script>
-  <script src="app.js?v=10"></script>
+  <script src="rooms-data.js?v=11-1"></script>
+  <script src="config.js?v=11-1"></script>
+  <script src="app.js?v=11-1"></script>
 </body>
 </html>
