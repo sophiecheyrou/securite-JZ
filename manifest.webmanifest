@@ -3,8 +3,8 @@
   "short_name": "Alerte JZ",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#eef2f7",
-  "theme_color": "#101827",
+  "background_color": "#4c478f",
+  "theme_color": "#5b2854",
   "icons": [
     {
       "src": "icons/icon-192.png",

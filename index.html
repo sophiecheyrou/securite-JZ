@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#101827" />
+  <meta name="theme-color" content="#5b2854" />
   <title>Suivi sécurité – Internat Jean Zay</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="styles.css?v=11-1" />
+  <link rel="stylesheet" href="styles.css?v=11-2" />
 </head>
 <body class="auth-locked">
   <section id="authGate" class="auth-gate" aria-labelledby="authTitle">
     <div class="auth-card">
-      <div class="auth-mark">JZ</div>
+      <img class="auth-logo" src="logo-jean-zay.jpg" alt="Logo de l’Internat Jean Zay">
       <p class="eyebrow">ACCÈS SÉCURISÉ</p>
       <h1 id="authTitle">Internat Jean Zay</h1>
       <p class="auth-subtitle">Suivi de l’exercice de sécurité</p>
@@ -25,17 +25,19 @@
         <p id="loginError" class="auth-error" role="alert" hidden></p>
       </form>
       <p class="auth-help">Accès réservé aux personnels autorisés. La connexion reste mémorisée sur cet appareil.</p>
+      <p class="auth-credit">Conception : Sophie Cheyrou</p>
     </div>
   </section>
   <header class="topbar">
     <button id="homeBtn" class="brand" aria-label="Retour à l’accueil">
-      <strong>Internat Jean Zay</strong>
-      <span>Suivi de l’exercice de sécurité</span>
+      <img class="brand-logo" src="logo-jean-zay.jpg" alt="" aria-hidden="true">
+      <span class="brand-copy"><strong>Internat Jean Zay</strong><span>Suivi de l’exercice de sécurité</span></span>
     </button>
     <div class="top-actions">
       <span id="syncState" class="sync-state"></span>
       <span id="securityState" class="security-state" hidden>🔒 Connecté</span>
       <button id="logoutBtn" class="logout-button" hidden>Déconnexion</button>
+      <button id="aboutBtn" class="about-button">À propos</button>
       <button id="archiveBtn" class="archive-button">Archives</button>
       <button id="newExerciseBtn" class="reset-button">Nouvel exercice</button>
       <button id="installBtn" class="install-button" hidden>Installer</button>
@@ -69,6 +71,7 @@
       </div>
 
       <div id="homeSummary" class="home-summary"></div>
+      <p class="app-credit">Conception : Sophie Cheyrou</p>
     </section>
 
     <section id="app" class="view">
@@ -114,6 +117,26 @@
     </section>
   </main>
 
+  <div id="aboutDialog" class="dialog-backdrop" hidden>
+    <div class="dialog about-dialog" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+      <button id="closeAboutBtn" class="about-close" aria-label="Fermer">×</button>
+      <img class="about-logo" src="logo-jean-zay.jpg" alt="Logo de l’Internat Jean Zay">
+      <p class="eyebrow">À PROPOS</p>
+      <h2 id="aboutTitle">Suivi de l’exercice de sécurité</h2>
+      <div class="about-copy">
+        <p>Cette application permet aux personnels de l’Internat Jean Zay de partager en temps réel la localisation des élèves internes pendant un exercice de sécurité.</p>
+        <p><strong>Cour Montmorency :</strong> les chambres paires sont cochées en vert lorsque l’élève se présente.</p>
+        <p><strong>Cour d’honneur :</strong> les chambres impaires sont cochées en vert lorsque l’élève se présente.</p>
+        <p><strong>Loge :</strong> une chambre est cochée en jaune lorsque sa clé est restée à l’accueil, ce qui indique que l’élève a provisoirement quitté l’internat.</p>
+        <p><strong>Tableau de bord :</strong> il agrège automatiquement les informations des trois postes. Il est en lecture seule et affiche les présents, les sortis et les chambres encore non localisées.</p>
+        <p>Le bouton <strong>Nouvel exercice</strong> remet collectivement les 451 chambres à l’état « Non localisé ». Les archives permettent de conserver un compte-rendu d’exercice.</p>
+        <p class="about-privacy">L’application utilise uniquement les numéros de chambre : aucun nom d’élève n’est affiché.</p>
+      </div>
+      <p class="about-credit">Conception : Sophie Cheyrou</p>
+      <button id="closeAboutBottomBtn" class="primary-button about-done">Fermer</button>
+    </div>
+  </div>
+
   <div id="confirmDialog" class="dialog-backdrop" hidden>
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
       <div class="dialog-icon">!</div>
@@ -130,8 +153,8 @@
   <div id="toast" class="toast" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="rooms-data.js?v=11-1"></script>
-  <script src="config.js?v=11-1"></script>
-  <script src="app.js?v=11-1"></script>
+  <script src="rooms-data.js?v=11-2"></script>
+  <script src="config.js?v=11-2"></script>
+  <script src="app.js?v=11-2"></script>
 </body>
 </html>

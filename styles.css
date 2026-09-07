@@ -153,3 +153,66 @@ body.auth-locked > main { visibility:hidden; }
 /* V11.1 — compte unique */
 .auth-form input[readonly]{background:#f8fafc;color:#101827;font-weight:900;letter-spacing:.04em;cursor:default}
 .auth-identity-help{display:block;margin:-3px 0 4px;color:#64748b;font-size:.82rem;line-height:1.35}
+
+/* V11.2 — identité Internat Jean Zay, à propos et accès sécurisé */
+:root{
+  --jz-purple:#4c478f;
+  --jz-plum:#5b2854;
+  --jz-orange:#d18317;
+  --jz-orange-soft:#f4d19b;
+}
+.topbar{background:linear-gradient(105deg,var(--jz-purple) 0%,var(--jz-plum) 64%,#3f203c 100%)}
+.brand{display:flex;flex-direction:row;align-items:center;gap:10px}
+.brand-logo{width:42px;height:42px;object-fit:contain;background:#fff;border-radius:8px;padding:2px;box-shadow:0 2px 8px #0003;flex:0 0 auto}
+.brand-copy{display:flex;flex-direction:column;align-items:flex-start;line-height:1.12}
+.brand-copy strong{font-size:1.08rem;color:#fff}
+.brand-copy>span{font-size:.78rem;opacity:.85;color:#fff}
+.about-button{border:1px solid #ffffff60;background:#ffffff16;color:#fff}
+.about-button:hover{background:#ffffff24}
+
+.auth-gate{
+  background:
+    linear-gradient(135deg,rgba(76,71,143,.96) 0 34%,rgba(91,40,84,.97) 34% 70%,rgba(209,131,23,.93) 70% 100%);
+  overflow:auto;
+}
+.auth-gate::before,.auth-gate::after{content:"";position:fixed;border:2px solid #ffffff55;pointer-events:none}
+.auth-gate::before{inset:24px;border-radius:28px}
+.auth-gate::after{inset:42px;border-radius:20px}
+.auth-card{position:relative;width:min(455px,100%);border:0;border-radius:24px;padding:30px 32px 24px;box-shadow:0 24px 70px #28132955;background:#fffdfb}
+.auth-logo{display:block;width:116px;height:112px;object-fit:contain;margin:0 auto 14px;border-radius:12px;background:#fff}
+.auth-card .eyebrow{color:var(--jz-orange);letter-spacing:.16em}
+.auth-card h1{color:var(--jz-plum)}
+.auth-subtitle{color:#5f5163}
+.auth-form label{color:#4a3d51}
+.auth-form input:focus{border-color:var(--jz-purple);box-shadow:0 0 0 3px #4c478f20}
+.auth-submit{background:linear-gradient(100deg,var(--jz-purple),var(--jz-plum));box-shadow:0 7px 16px #5b28542c}
+.auth-submit:hover{filter:brightness(1.05)}
+.auth-help{color:#746878}
+.auth-credit{margin:12px 0 0;color:#8b7b8e;font-size:.75rem}
+
+.app-credit{text-align:center;color:#7c8798;font-size:.72rem;margin:15px 0 2px}
+.about-dialog{position:relative;text-align:left;max-height:min(720px,90vh);overflow:auto;padding:24px 26px 22px}
+.about-close{position:absolute;right:14px;top:12px;width:36px;height:36px;border:0;border-radius:50%;background:#f1f5f9;color:#334155;font-size:1.5rem;font-weight:800;line-height:1}
+.about-logo{display:block;width:82px;height:79px;object-fit:contain;margin:0 auto 10px;background:#fff;border-radius:8px}
+.about-dialog>.eyebrow{text-align:center;color:var(--jz-orange)}
+.about-dialog h2{text-align:center;color:var(--jz-plum);margin-bottom:16px}
+.about-copy{font-size:.93rem;line-height:1.48;color:#475569}
+.about-copy p{margin:8px 0}
+.about-copy strong{color:#31263a}
+.about-privacy{background:#f6f3f7;border-left:4px solid var(--jz-purple);padding:9px 11px;border-radius:8px}
+.about-credit{text-align:center;color:#8791a1;font-size:.78rem;margin:15px 0 10px}
+.about-done{display:block;width:100%;background:linear-gradient(100deg,var(--jz-purple),var(--jz-plum))}
+
+@media(max-width:760px){
+  .brand-logo{width:34px;height:34px;border-radius:7px}
+  .brand-copy strong{font-size:.88rem}.brand-copy>span{font-size:.62rem}
+  .about-button{font-size:.68rem!important;padding:8px 7px!important}
+  .auth-gate{padding:16px}.auth-gate::before{inset:10px}.auth-gate::after{display:none}
+  .auth-card{padding:22px 18px 18px}.auth-logo{width:92px;height:89px}.auth-card h1{font-size:1.6rem}
+}
+@media(max-width:480px){
+  .brand-copy{display:none}
+  .brand-logo{width:32px;height:32px}
+  .top-actions{gap:4px}
+  .about-button{padding:7px 6px!important}
+}

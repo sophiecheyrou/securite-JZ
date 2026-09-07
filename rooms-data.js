@@ -364,52 +364,17 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
-    "room": "R10A",
-    "floor": 1,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
-    "room": "R10B",
-    "floor": 1,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
-    "room": "R11A",
+    "room": "177",
     "floor": 1,
     "side": "IMPAIR",
     "courtyard": "COUR D'HONNEUR",
     "needs_review": false
   },
   {
-    "room": "R11B",
-    "floor": 1,
-    "side": "IMPAIR",
-    "courtyard": "COUR D'HONNEUR",
-    "needs_review": false
-  },
-  {
-    "room": "R12A",
+    "room": "178",
     "floor": 1,
     "side": "PAIR",
     "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
-    "room": "R12B",
-    "floor": 1,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
-    "room": "R15",
-    "floor": 1,
-    "side": "IMPAIR",
-    "courtyard": "COUR D'HONNEUR",
     "needs_review": false
   },
   {
@@ -1036,6 +1001,13 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
+    "room": "290",
+    "floor": 2,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
+    "needs_review": false
+  },
+  {
     "room": "291",
     "floor": 2,
     "side": "IMPAIR",
@@ -1106,41 +1078,6 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
-    "room": "R20A",
-    "floor": 2,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
-    "room": "R20B",
-    "floor": 2,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
-    "room": "R21B",
-    "floor": 2,
-    "side": "IMPAIR",
-    "courtyard": "COUR D'HONNEUR",
-    "needs_review": false
-  },
-  {
-    "room": "R22.B",
-    "floor": 2,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
-    "room": "R22A",
-    "floor": 2,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
     "room": "S.20",
     "floor": 2,
     "side": "PAIR",
@@ -1174,11 +1111,6 @@ window.ROOMS_DATA = [
     "side": "PAIR",
     "courtyard": "COUR MONTMORENCY",
     "needs_review": false
-  },
-  {
-    "room": "303",
-    "floor": 3,
-    "side": "IMPAIR"
   },
   {
     "room": "304",
@@ -1650,6 +1582,13 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
+    "room": "371",
+    "floor": 3,
+    "side": "IMPAIR",
+    "courtyard": "COUR D'HONNEUR",
+    "needs_review": false
+  },
+  {
     "room": "372",
     "floor": 3,
     "side": "PAIR",
@@ -1762,6 +1701,13 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
+    "room": "390",
+    "floor": 3,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
+    "needs_review": false
+  },
+  {
     "room": "391",
     "floor": 3,
     "side": "IMPAIR",
@@ -1811,13 +1757,6 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
-    "room": "R30.A",
-    "floor": 3,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
-    "needs_review": false
-  },
-  {
     "room": "S.30",
     "floor": 3,
     "side": "PAIR",
@@ -1843,6 +1782,13 @@ window.ROOMS_DATA = [
     "floor": 3,
     "side": "IMPAIR",
     "courtyard": "COUR D'HONNEUR",
+    "needs_review": false
+  },
+  {
+    "room": "402",
+    "floor": 4,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
     "needs_review": false
   },
   {
@@ -2448,6 +2394,13 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
+    "room": "490",
+    "floor": 4,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
+    "needs_review": false
+  },
+  {
     "room": "491",
     "floor": 4,
     "side": "IMPAIR",
@@ -2480,6 +2433,13 @@ window.ROOMS_DATA = [
     "floor": 4,
     "side": "IMPAIR",
     "courtyard": "COUR D'HONNEUR",
+    "needs_review": false
+  },
+  {
+    "room": "F.44",
+    "floor": 4,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
     "needs_review": false
   },
   {
@@ -3127,6 +3087,27 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
+    "room": "591",
+    "floor": 5,
+    "side": "IMPAIR",
+    "courtyard": "COUR D'HONNEUR",
+    "needs_review": false
+  },
+  {
+    "room": "592",
+    "floor": 5,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
+    "needs_review": false
+  },
+  {
+    "room": "F.50",
+    "floor": 5,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
+    "needs_review": false
+  },
+  {
     "room": "F.51",
     "floor": 5,
     "side": "IMPAIR",
@@ -3148,17 +3129,17 @@ window.ROOMS_DATA = [
     "needs_review": false
   },
   {
+    "room": "F.54",
+    "floor": 5,
+    "side": "PAIR",
+    "courtyard": "COUR MONTMORENCY",
+    "needs_review": false
+  },
+  {
     "room": "F.55",
     "floor": 5,
     "side": "IMPAIR",
     "courtyard": "COUR D'HONNEUR",
-    "needs_review": false
-  },
-  {
-    "room": "F54",
-    "floor": 5,
-    "side": "PAIR",
-    "courtyard": "COUR MONTMORENCY",
     "needs_review": false
   },
   {
@@ -3174,61 +3155,5 @@ window.ROOMS_DATA = [
     "side": "IMPAIR",
     "courtyard": "COUR D'HONNEUR",
     "needs_review": false
-  },
-  {
-    "room": "RC1",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
-  },
-  {
-    "room": "RC2A",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
-  },
-  {
-    "room": "RC2B",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
-  },
-  {
-    "room": "RC3A",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
-  },
-  {
-    "room": "RC3B",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
-  },
-  {
-    "room": "RC3C",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
-  },
-  {
-    "room": "RC4A",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
-  },
-  {
-    "room": "RC4B",
-    "floor": null,
-    "side": null,
-    "courtyard": null,
-    "needs_review": true
   }
 ];

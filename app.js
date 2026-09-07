@@ -69,6 +69,10 @@ function bindUiEvents() {
   el('homeBtn').addEventListener('click', showHome);
   el('archivesBackBtn').addEventListener('click', showHome);
   el('archiveBtn').addEventListener('click', showArchives);
+  el('aboutBtn').addEventListener('click', openAboutDialog);
+  el('closeAboutBtn').addEventListener('click', closeAboutDialog);
+  el('closeAboutBottomBtn').addEventListener('click', closeAboutDialog);
+  el('aboutDialog').addEventListener('click', event => { if (event.target === el('aboutDialog')) closeAboutDialog(); });
   el('deleteSelectedArchivesBtn').addEventListener('click', deleteSelectedArchives);
   el('selectAllArchives').addEventListener('change', toggleSelectAllArchives);
   el('newExerciseBtn').addEventListener('click', openResetDialog);
@@ -115,6 +119,8 @@ async function login(event) {
   const expectedIdentifier = String(cfg.sharedLoginId || 'SECURITE-JZ').trim().toUpperCase();
   const email = String(cfg.sharedAuthEmail || '').trim();
   const password = el('loginPassword').value;
+  const button = el('loginBtn');
+  const errorNode = el('loginError');
 
   if (!email || email.includes('COLLEZ_ICI')) {
     errorNode.textContent = 'Compte unique non configuré. Renseignez sharedAuthEmail dans config.js.';
@@ -127,8 +133,6 @@ async function login(event) {
     errorNode.hidden = false;
     return;
   }
-  const button = el('loginBtn');
-  const errorNode = el('loginError');
   errorNode.hidden = true;
   button.disabled = true;
   button.textContent = 'Connexion…';
@@ -342,8 +346,9 @@ function renderSearch() {
   el('clearSearchBtn').hidden = !searchValue;
   if (!searchValue) { wrap.hidden = true; wrap.innerHTML = ''; return; }
 
-  const exact = rooms.find(r => String(r.room).toUpperCase() === searchValue);
-  const partials = rooms.filter(r => String(r.room).toUpperCase().includes(searchValue)).slice(0,8);
+  const searchableRooms = scopeRooms();
+  const exact = searchableRooms.find(r => String(r.room).toUpperCase() === searchValue);
+  const partials = searchableRooms.filter(r => String(r.room).toUpperCase().includes(searchValue)).slice(0,8);
   const matches = exact ? [exact] : partials;
   if (!matches.length) { wrap.hidden = false; wrap.innerHTML = '<div class="search-error">Aucune chambre trouvée.</div>'; return; }
 
@@ -368,6 +373,13 @@ function renderSearch() {
     const input = el('roomSearch');
     if (input) input.focus();
   }));
+}
+
+function openAboutDialog() {
+  el('aboutDialog').hidden = false;
+}
+function closeAboutDialog() {
+  el('aboutDialog').hidden = true;
 }
 
 function clearSearch() {
@@ -610,7 +622,7 @@ function scheduleRemoteReload() {
 
 function subscribeRealtime() {
   supa
-    .channel('jz-room-states-v11')
+    .channel('jz-room-states-v11-2')
     .on('postgres_changes', {event:'*',schema:'public',table:'room_states'}, payload => {
       const row = payload.new || payload.old;
       if (!row || Number(row.exercise_id) !== Number(activeExerciseId)) return;
@@ -624,7 +636,7 @@ function subscribeRealtime() {
     });
 
   supa
-    .channel('jz-exercises-v11')
+    .channel('jz-exercises-v11-2')
     .on('postgres_changes', {event:'*',schema:'public',table:'exercises'}, () => scheduleRemoteReload())
     .subscribe();
 }
