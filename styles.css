@@ -216,3 +216,49 @@ body.auth-locked > main { visibility:hidden; }
   .top-actions{gap:4px}
   .about-button{padding:7px 6px!important}
 }
+/* V12.1 — Mise en valeur de la conception */
+.signature-credit{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  width:fit-content;
+  max-width:100%;
+  margin:18px auto 4px;
+  padding:10px 22px;
+  text-align:center;
+  background:#fff;
+  border:1px solid #e3d9e7;
+  border-radius:14px;
+  box-shadow:0 5px 16px #5b285418;
+}
+
+.signature-credit span{
+  color:#64748b;
+  font-size:.72rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.signature-credit strong{
+  color:#5b2854;
+  font-size:1.05rem;
+  font-weight:900;
+}
+
+.signature-credit small{
+  color:#d18317;
+  font-size:.76rem;
+  font-weight:800;
+}
+
+.about-dialog .signature-credit{
+  margin:18px auto 10px;
+  padding:12px 28px;
+}
+
+.about-dialog .signature-credit strong{
+  font-size:1.15rem;
+}
