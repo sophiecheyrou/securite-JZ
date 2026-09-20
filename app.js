@@ -546,8 +546,28 @@ async function saveExercise() {
   return snapshot;
 }
 
-function renderArchives() {
-  const archives = JSON.parse(localStorage.getItem('jz-exercise-archives') || '[]');
+async function renderArchives() {
+  let archives = [];
+
+  if (supa) {
+    try {
+      const { data, error } = await supa
+        .from('exercise_archives')
+        .select('id, exercise_id, snapshot, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      archives = (data || [])
+        .map(row => row.snapshot)
+        .filter(snapshot => snapshot && typeof snapshot === 'object');
+    } catch (error) {
+      console.warn('Archives Supabase indisponibles, utilisation des archives locales.', error);
+      archives = JSON.parse(localStorage.getItem('jz-exercise-archives') || '[]');
+    }
+  } else {
+    archives = JSON.parse(localStorage.getItem('jz-exercise-archives') || '[]');
+  }
   const tools = el('archivesTools');
   const selectAll = el('selectAllArchives');
   const deleteBtn = el('deleteSelectedArchivesBtn');
