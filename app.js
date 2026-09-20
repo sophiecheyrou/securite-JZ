@@ -119,22 +119,54 @@ async function activateRemoteSession() {
 async function login(event) {
   event.preventDefault();
   if (!supa) return;
+
   const identifier = el('loginIdentifier').value.trim().toUpperCase();
-  const email = cfg.users?.[identifier];
   const password = el('loginPassword').value;
   const button = el('loginBtn');
   const errorNode = el('loginError');
-  if (!email) { errorNode.textContent = 'Identifiant inconnu.'; errorNode.hidden = false; return; }
-  errorNode.hidden = true; button.disabled = true; button.textContent = 'Connexion…';
+
+  errorNode.hidden = true;
+  button.disabled = true;
+  button.textContent = 'Connexion…';
+
   try {
-    const { error } = await supa.auth.signInWithPassword({ email, password });
+    // Recherche de l'identifiant dans l'annuaire V12
+    const { data: profile, error: profileError } = await supa
+      .from('user_profiles_v12')
+      .select('identifier,email,active')
+      .eq('identifier', identifier)
+      .eq('active', true)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    if (!profile || !profile.email) {
+      errorNode.textContent = 'Identifiant inconnu.';
+      errorNode.hidden = false;
+      return;
+    }
+
+    // Authentification Supabase avec l'adresse associée
+    const { error } = await supa.auth.signInWithPassword({
+      email: profile.email,
+      password
+    });
+
     if (error) throw error;
+
     el('loginPassword').value = '';
     await activateRemoteSession();
+
   } catch (error) {
-    errorNode.textContent = 'Connexion impossible. Vérifiez votre identifiant et votre mot de passe.';
-    errorNode.hidden = false; console.warn('Échec de connexion', error);
-  } finally { button.disabled = false; button.textContent = 'Se connecter'; }
+    errorNode.textContent =
+      'Connexion impossible. Vérifiez votre identifiant et votre mot de passe.';
+    errorNode.hidden = false;
+    console.warn('Échec de connexion', error);
+
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Se connecter';
+  }
 }
 
 async function logout() {
