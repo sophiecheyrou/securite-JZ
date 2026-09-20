@@ -13,6 +13,7 @@ localStorage.setItem('jz-device-id', deviceId);
 let deferredPrompt = null;
 let toastTimer = null;
 let searchValue = '';
+let currentProfile = null;
 
 const el = id => document.getElementById(id);
 const roomSort = (a,b) => String(a).localeCompare(String(b), 'fr', { numeric: true });
@@ -33,7 +34,6 @@ async function init() {
   Object.freeze(rooms);
 
   bindUiEvents();
-  if (el('loginIdentifier')) el('loginIdentifier').value = String(cfg.sharedLoginId || 'SECURITE-JZ');
 
   const supabaseKey = cfg.supabasePublishableKey || cfg.supabaseAnonKey || '';
   const remoteConfigured = /^https:\/\/.+\.supabase\.co\/?$/.test(cfg.supabaseUrl || '') && supabaseKey && !String(supabaseKey).includes('COLLEZ_ICI');
@@ -69,6 +69,8 @@ function bindUiEvents() {
   el('homeBtn').addEventListener('click', showHome);
   el('archivesBackBtn').addEventListener('click', showHome);
   el('archiveBtn').addEventListener('click', showArchives);
+  el('historyBtn').addEventListener('click', showHistory);
+  el('historyBackBtn').addEventListener('click', showHome);
   el('aboutBtn').addEventListener('click', openAboutDialog);
   el('closeAboutBtn').addEventListener('click', closeAboutDialog);
   el('closeAboutBottomBtn').addEventListener('click', closeAboutDialog);
@@ -90,6 +92,8 @@ function bindUiEvents() {
 
 async function activateRemoteSession() {
   setSyncState('Connexion…', 'connecting');
+  await loadMyProfile();
+  applyPermissions();
   await ensureActiveExercise();
   await loadRemote();
   subscribeRealtime();
@@ -116,39 +120,21 @@ async function login(event) {
   event.preventDefault();
   if (!supa) return;
   const identifier = el('loginIdentifier').value.trim().toUpperCase();
-  const expectedIdentifier = String(cfg.sharedLoginId || 'SECURITE-JZ').trim().toUpperCase();
-  const email = String(cfg.sharedAuthEmail || '').trim();
+  const email = cfg.users?.[identifier];
   const password = el('loginPassword').value;
   const button = el('loginBtn');
   const errorNode = el('loginError');
-
-  if (!email || email.includes('COLLEZ_ICI')) {
-    errorNode.textContent = 'Compte unique non configuré. Renseignez sharedAuthEmail dans config.js.';
-    errorNode.hidden = false;
-    return;
-  }
-
-  if (identifier !== expectedIdentifier) {
-    errorNode.textContent = 'Identifiant incorrect.';
-    errorNode.hidden = false;
-    return;
-  }
-  errorNode.hidden = true;
-  button.disabled = true;
-  button.textContent = 'Connexion…';
+  if (!email) { errorNode.textContent = 'Identifiant inconnu.'; errorNode.hidden = false; return; }
+  errorNode.hidden = true; button.disabled = true; button.textContent = 'Connexion…';
   try {
     const { error } = await supa.auth.signInWithPassword({ email, password });
     if (error) throw error;
     el('loginPassword').value = '';
     await activateRemoteSession();
   } catch (error) {
-    errorNode.textContent = 'Connexion impossible. Vérifiez le mot de passe.';
-    errorNode.hidden = false;
-    console.warn('Échec de connexion', error);
-  } finally {
-    button.disabled = false;
-    button.textContent = 'Se connecter';
-  }
+    errorNode.textContent = 'Connexion impossible. Vérifiez votre identifiant et votre mot de passe.';
+    errorNode.hidden = false; console.warn('Échec de connexion', error);
+  } finally { button.disabled = false; button.textContent = 'Se connecter'; }
 }
 
 async function logout() {
@@ -165,6 +151,7 @@ function lockApplication() {
   activeExerciseId = null;
   activeExerciseStartedAt = null;
   role = null;
+  currentProfile = null;
   el('securityState').hidden = true;
   el('logoutBtn').hidden = true;
   setSyncState('Non connecté', 'offline');
@@ -185,6 +172,35 @@ function hideAuthGate() {
   document.body.classList.remove('auth-locked');
 }
 
+
+async function loadMyProfile() {
+  const { data, error } = await supa.rpc('get_my_profile_v12');
+  if (error) throw new Error('Profil utilisateur indisponible : ' + error.message);
+  const profile = Array.isArray(data) ? data[0] : data;
+  if (!profile) throw new Error('Ce compte n’est pas autorisé pour l’application.');
+  currentProfile = profile;
+}
+function isAdmin() { return currentProfile?.role === 'ADMIN'; }
+function applyPermissions() {
+  const admin = isAdmin();
+  el('archiveBtn').hidden = !admin; el('newExerciseBtn').hidden = !admin; el('historyBtn').hidden = !admin;
+  const name = currentProfile ? `${currentProfile.first_name} ${currentProfile.last_name}` : 'Connecté';
+  if (el('connectedUser')) el('connectedUser').textContent = name;
+}
+async function renderHistory() {
+  const list = el('historyList');
+  list.innerHTML = '<div class="empty-state">Chargement…</div>';
+  const { data, error } = await supa.from('activity_log_v12').select('created_at,first_name,last_name,station,room_number,old_status,new_status,action').order('created_at',{ascending:false}).limit(500);
+  if (error) { list.innerHTML = `<div class="empty-state">Historique indisponible : ${escapeHtml(error.message)}</div>`; return; }
+  if (!data?.length) { list.innerHTML = '<div class="empty-state">Aucune action enregistrée.</div>'; return; }
+  list.innerHTML = data.map(x => {
+    const when = new Date(x.created_at).toLocaleString('fr-FR');
+    const who = `${x.first_name || ''} ${x.last_name || ''}`.trim();
+    const change = x.room_number ? `Chambre ${escapeHtml(x.room_number)} · ${escapeHtml(LABELS[x.old_status] || x.old_status || '—')} → ${escapeHtml(LABELS[x.new_status] || x.new_status || '—')}` : escapeHtml(x.action || 'Action');
+    return `<article class="archive-card"><h2>${escapeHtml(when)} — ${escapeHtml(who)}</h2><div class="archive-room-list"><b>${escapeHtml(x.station || 'SYSTÈME')}</b> · ${change}</div></article>`;
+  }).join('');
+}
+
 function normalizeStatuses() {
   let changed = false;
   Object.keys(statuses).forEach(roomNumber => {
@@ -202,7 +218,8 @@ function showView(id) {
 }
 
 function showHome() { role = null; clearSearch(); showView('home'); updateHomeSummary(); }
-function showArchives() { role = null; showView('archives'); renderArchives(); }
+function showArchives() { if (!isAdmin()) return; role = null; showView('archives'); renderArchives(); }
+async function showHistory() { if (!isAdmin()) return; role = null; showView('history'); await renderHistory(); }
 
 function openRole(nextRole) {
   role = nextRole; clearSearch(); showView('app'); render();
@@ -274,7 +291,7 @@ function render() {
   el('searchWrap').hidden = isDirection;
   el('operationalGroups').hidden = isDirection;
   el('missingGroups').hidden = !isDirection;
-  el('dashboardActions').hidden = !isDirection;
+  el('dashboardActions').hidden = !(isDirection && isAdmin());
 
   if (isDirection) renderDashboard(scope);
   else renderOperationalGroups(scope);
@@ -403,7 +420,7 @@ async function setStatus(roomNumber, status) {
   if (role === 'DIRECTION') return;
   if (supa) {
     const exerciseId = await ensureActiveExercise();
-    const { error } = await supa.rpc('record_room_status', {
+    const { error } = await supa.rpc('record_room_status_v12', {
       p_exercise_id: exerciseId,
       p_room_number: roomNumber,
       p_status: status,
@@ -421,14 +438,15 @@ async function setStatus(roomNumber, status) {
 }
 
 function saveLocal() { localStorage.setItem('jz-statuses', JSON.stringify(statuses)); }
-function openResetDialog() { el('confirmDialog').hidden = false; }
+function openResetDialog() { if (!isAdmin()) return; el('confirmDialog').hidden = false; }
 function closeResetDialog() { el('confirmDialog').hidden = true; }
 
 async function resetAll() {
+  if (!isAdmin()) { alert('Fonction réservée aux administrateurs.'); return; }
   el('confirmResetBtn').disabled = true; el('saveThenResetBtn').disabled = true;
   try {
     if (supa) {
-      const { data, error } = await supa.rpc('start_new_exercise');
+      const { data, error } = await supa.rpc('start_new_exercise_v12');
       if (error) throw error;
       activeExerciseId = Number(data);
       activeExerciseStartedAt = new Date().toISOString();
@@ -479,6 +497,7 @@ function buildExerciseSnapshot() {
 }
 
 async function saveExercise() {
+  if (!isAdmin()) { alert('Fonction réservée aux administrateurs.'); return null; }
   const snapshot = buildExerciseSnapshot();
   if (supa) {
     try {
@@ -622,7 +641,7 @@ function scheduleRemoteReload() {
 
 function subscribeRealtime() {
   supa
-    .channel('jz-room-states-v11-2')
+    .channel('jz-room-states-v12')
     .on('postgres_changes', {event:'*',schema:'public',table:'room_states'}, payload => {
       const row = payload.new || payload.old;
       if (!row || Number(row.exercise_id) !== Number(activeExerciseId)) return;
@@ -636,7 +655,7 @@ function subscribeRealtime() {
     });
 
   supa
-    .channel('jz-exercises-v11-2')
+    .channel('jz-exercises-v12')
     .on('postgres_changes', {event:'*',schema:'public',table:'exercises'}, () => scheduleRemoteReload())
     .subscribe();
 }

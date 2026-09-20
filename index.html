@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#5b2854" />
   <title>Suivi sécurité – Internat Jean Zay</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="styles.css?v=11-2" />
+  <link rel="stylesheet" href="styles.css?v=12" />
 </head>
 <body class="auth-locked">
   <section id="authGate" class="auth-gate" aria-labelledby="authTitle">
@@ -17,8 +17,8 @@
       <p class="auth-subtitle">Suivi de l’exercice de sécurité</p>
       <form id="loginForm" class="auth-form">
         <label for="loginIdentifier">Identifiant</label>
-        <input id="loginIdentifier" type="text" autocomplete="username" required readonly value="SECURITE-JZ" aria-describedby="loginIdentityHelp">
-        <small id="loginIdentityHelp" class="auth-identity-help">Identifiant commun à tous les personnels autorisés.</small>
+        <input id="loginIdentifier" type="text" autocomplete="username" required placeholder="Ex. SCHEYROU" autocapitalize="characters" aria-describedby="loginIdentityHelp">
+        <small id="loginIdentityHelp" class="auth-identity-help">Votre identifiant personnel.</small>
         <label for="loginPassword">Mot de passe</label>
         <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Mot de passe">
         <button id="loginBtn" class="auth-submit" type="submit">Se connecter</button>
@@ -35,9 +35,10 @@
     </button>
     <div class="top-actions">
       <span id="syncState" class="sync-state"></span>
-      <span id="securityState" class="security-state" hidden>🔒 Connecté</span>
+      <span id="securityState" class="security-state" hidden>🔒 <span id="connectedUser">Connecté</span></span>
       <button id="logoutBtn" class="logout-button" hidden>Déconnexion</button>
       <button id="aboutBtn" class="about-button">À propos</button>
+      <button id="historyBtn" class="archive-button" hidden>Historique</button>
       <button id="archiveBtn" class="archive-button">Archives</button>
       <button id="newExerciseBtn" class="reset-button">Nouvel exercice</button>
       <button id="installBtn" class="install-button" hidden>Installer</button>
@@ -101,6 +102,14 @@
       </div>
     </section>
 
+    <section id="history" class="view">
+      <div class="screen-header compact-header">
+        <button id="historyBackBtn" class="back-button">← Accueil</button>
+        <div class="screen-title"><p class="eyebrow">TRAÇABILITÉ</p><h1>Historique des actions</h1></div>
+      </div>
+      <div id="historyList" class="archives-list"></div>
+    </section>
+
     <section id="archives" class="view">
       <div class="screen-header compact-header">
         <button id="archivesBackBtn" class="back-button">← Accueil</button>
@@ -153,8 +162,8 @@
   <div id="toast" class="toast" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="rooms-data.js?v=11-2"></script>
-  <script src="config.js?v=11-2"></script>
-  <script src="app.js?v=11-2"></script>
+  <script src="rooms-data.js?v=12"></script>
+  <script src="config.js?v=12"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
