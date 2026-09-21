@@ -213,11 +213,20 @@ async function loadMyProfile() {
   if (!profile) throw new Error('Ce compte n’est pas autorisé pour l’application.');
   currentProfile = profile;
 }
-function isAdmin() { return currentProfile?.role === 'ADMIN'; }
 function applyPermissions() {
   const admin = isAdmin();
-  el('archiveBtn').hidden = !admin; el('newExerciseBtn').hidden = !admin; el('historyBtn').hidden = !admin;
-  const name = currentProfile ? `${currentProfile.first_name} ${currentProfile.last_name}` : 'Connecté';
+
+  el('archiveBtn').hidden = !admin;
+  el('newExerciseBtn').hidden = !admin;
+  el('historyBtn').hidden = !admin;
+
+  const clearHistoryBtn = el('clearHistoryBtn');
+  if (clearHistoryBtn) clearHistoryBtn.hidden = !admin;
+
+  const name = currentProfile
+    ? `${currentProfile.first_name} ${currentProfile.last_name}`
+    : 'Connecté';
+
   if (el('connectedUser')) el('connectedUser').textContent = name;
 }
 async function renderHistory() {
