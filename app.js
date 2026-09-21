@@ -230,8 +230,6 @@ function applyPermissions() {
   if (el('connectedUser')) el('connectedUser').textContent = name;
 }
 async function renderHistory() {
-    const clearBtn = el('clearHistoryBtn');
-  if (clearBtn) clearBtn.hidden = !isAdmin();
   const list = el('historyList');
   list.innerHTML = '<div class="empty-state">Chargement…</div>';
   const { data, error } = await supa.from('activity_log_v12').select('created_at,first_name,last_name,station,room_number,old_status,new_status,action').order('created_at',{ascending:false}).limit(500);
