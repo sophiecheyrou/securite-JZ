@@ -212,6 +212,8 @@ async function loadMyProfile() {
   const profile = Array.isArray(data) ? data[0] : data;
   if (!profile) throw new Error('Ce compte n’est pas autorisé pour l’application.');
   currentProfile = profile;
+}function isAdmin() {
+  return currentProfile?.role === 'ADMIN';
 }
 function applyPermissions() {
   const admin = isAdmin();
