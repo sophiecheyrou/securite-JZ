@@ -71,6 +71,7 @@ function bindUiEvents() {
   el('archiveBtn').addEventListener('click', showArchives);
   el('historyBtn').addEventListener('click', showHistory);
   el('historyBackBtn').addEventListener('click', showHome);
+  el('clearHistoryBtn').addEventListener('click', clearHistory);
   el('aboutBtn').addEventListener('click', openAboutDialog);
   el('closeAboutBtn').addEventListener('click', closeAboutDialog);
   el('closeAboutBottomBtn').addEventListener('click', closeAboutDialog);
@@ -232,7 +233,41 @@ async function renderHistory() {
     return `<article class="archive-card"><h2>${escapeHtml(when)} — ${escapeHtml(who)}</h2><div class="archive-room-list"><b>${escapeHtml(x.station || 'SYSTÈME')}</b> · ${change}</div></article>`;
   }).join('');
 }
+async function clearHistory() {
+  if (!isAdmin()) {
+    alert('Fonction réservée aux administrateurs.');
+    return;
+  }
 
+  const confirmation1 = window.confirm(
+    'ATTENTION : vous allez effacer définitivement tout l’historique des actions.\n\nLes archives des exercices ne seront pas supprimées.\n\nVoulez-vous continuer ?'
+  );
+  if (!confirmation1) return;
+
+  const confirmation2 = window.prompt(
+    'Cette action est irréversible.\n\nPour confirmer la suppression de tout l’historique, saisissez exactement : EFFACER'
+  );
+
+  if (confirmation2 !== 'EFFACER') {
+    alert('Suppression annulée.');
+    return;
+  }
+
+  try {
+    const { error } = await supa
+      .from('activity_log_v12')
+      .delete()
+      .not('created_at', 'is', null);
+
+    if (error) throw error;
+
+    await renderHistory();
+    showToast('Historique effacé.');
+  } catch (error) {
+    console.error(error);
+    alert('Impossible d’effacer l’historique : ' + error.message);
+  }
+}
 function normalizeStatuses() {
   let changed = false;
   Object.keys(statuses).forEach(roomNumber => {
